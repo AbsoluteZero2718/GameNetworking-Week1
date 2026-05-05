@@ -1,0 +1,65 @@
+using UnityEngine;
+using Unity.Netcode;
+
+public class NetworkPlayerController : NetworkBehaviour
+{
+    [SerializeField] float moveSpeed = 5f;
+    [SerializeField] float gravity = -9.8f;
+    [SerializeField] float groundedGravity = -2f;
+
+    private CharacterController controller;
+    private float verticalVelocity;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        controller = GetComponent<CharacterController>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (!IsOwner)
+        {
+            return;
+        }
+
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+        Vector2 inputDiretion = new Vector2(horizontalInput, verticalInput);
+
+        if(IsServer)
+        {
+            MovePlayer(inputDiretion);
+        }
+        else
+        {
+            MovePlayerRPC(inputDiretion);
+        }
+    }
+
+    [Rpc(SendTo.Server)] //marks the next method as an RPC that runs on the server.
+
+    private void MovePlayerRPC(Vector2 movementInput)
+    {
+        MovePlayer(movementInput);
+    }
+
+    private void MovePlayer(Vector2 movementInput)
+    {
+        if (controller.isGrounded && verticalVelocity < 0f)
+        {
+            verticalVelocity = groundedGravity;
+        }
+        else
+        {
+            verticalVelocity += groundedGravity * Time.deltaTime;
+        }
+
+        Vector3 moveDirection = new Vector3(movementInput.x, movementInput.y).normalized;
+        Vector3 horizontalMovement = moveDirection * moveSpeed;
+        Vector3 vertialMovement = Vector3.up * verticalVelocity;
+        Vector3 finalMovement = horizontalMovement + vertialMovement;   
+
+        controller.Move(finalMovement * Time.deltaTime);
+    }
+}
