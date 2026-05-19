@@ -6,43 +6,63 @@ using Unity.Netcode;
 public class PlayerCount : NetworkBehaviour
 {
     [SerializeField] private TextMeshProUGUI playerCountText;
+    public NetworkVariable<int> networkPlayerCount = new NetworkVariable<int>(0);
 
-    private NetworkVariable<int> totalPlayers = new NetworkVariable<int>(0);
-   
     public override void OnNetworkSpawn()
     {
-        playerCountText = GetComponent<TextMeshProUGUI>();
+        networkPlayerCount.OnValueChanged += OnPlayerCountChanged;
 
-        totalPlayers.OnValueChanged += OnPlayerCountChanged;
-        UpdateUIText(totalPlayers.Value);
+        // Initialize UI for whoever just spawned in
+        UpdateUI(networkPlayerCount.Value);
 
+        // Server-side: Hook into connection callbacks
         if (IsServer)
         {
-            UpdatePlayerCountServerRPC(1);
-            
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
+
+            // Set initial count
+            networkPlayerCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
         }
-
-        
     }
 
-    private void OnPlayerCountChanged(int previousValue, int newValue)
+    private void OnClientConnected(ulong clientId)
     {
-        UpdateUIText(newValue);
-
-        Debug.Log($"Player Count: {newValue}");
+        // Server updates the NetworkVariable
+        networkPlayerCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
     }
 
-    private void UpdateUIText(int count)
+    private void OnClientDisconnected(ulong clientId)
     {
-        if(playerCountText != null)
+        // Server updates the NetworkVariable
+        networkPlayerCount.Value = NetworkManager.Singleton.ConnectedClients.Count;
+    }
+
+    private void OnPlayerCountChanged(int oldValue, int newValue)
+    {
+        UpdateUI(newValue);
+    }
+
+    private void UpdateUI(int count)
+    {
+        if (playerCountText != null)
         {
-            playerCountText.text = $"Player Count: {count}";
+            playerCountText.text = $"Players: {count}";
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void UpdatePlayerCountServerRPC(int amountToAdd)
+    void Update()
     {
-        totalPlayers.Value += amountToAdd;   
+        if (NetworkManager.Singleton != null && NetworkManager.Singleton.IsServer)
+        {
+            // Get total connected clients (including the Host if applicable)
+            int count = NetworkManager.Singleton.ConnectedClients.Count;
+            Debug.Log($"Current Players: {count}");
+            
+            if (playerCountText != null)
+            {
+                playerCountText.text = $"Player Count: {count}";
+            }
+        }
     }
 }

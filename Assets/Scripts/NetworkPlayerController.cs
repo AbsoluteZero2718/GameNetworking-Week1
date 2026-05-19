@@ -55,7 +55,7 @@ public class NetworkPlayerController : NetworkBehaviour
             verticalVelocity += groundedGravity * Time.deltaTime;
         }
 
-        Vector3 moveDirection = new Vector3(movementInput.x, movementInput.y).normalized;
+        Vector3 moveDirection = new Vector3(movementInput.x, 0f, movementInput.y).normalized;
         Vector3 horizontalMovement = moveDirection * moveSpeed;
         Vector3 vertialMovement = Vector3.up * verticalVelocity;
         Vector3 finalMovement = horizontalMovement + vertialMovement;   
