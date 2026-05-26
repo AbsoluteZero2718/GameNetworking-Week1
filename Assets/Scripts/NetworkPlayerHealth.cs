@@ -1,9 +1,12 @@
 using UnityEngine;
 using Unity.Netcode;
-
+using TMPro;
+using UnityEngine.UI;
 public class NetworkPlayerHealth : NetworkBehaviour
 {
     [SerializeField] private int maxHealth = 100;
+    [SerializeField] public GameObject floatingTextPrefab;
+    private RectTransform healthbar;
 
     public NetworkVariable<int> currentHealth = new NetworkVariable<int>(  //network-synced health variable
         100,
@@ -40,6 +43,15 @@ public class NetworkPlayerHealth : NetworkBehaviour
         {
             Respawn();
         }
+
+        if (floatingTextPrefab)
+        {
+            ShowFloatingText();
+        }
+
+        healthbar.sizeDelta = new Vector2(currentHealth.Value * 2, healthbar.sizeDelta.y);
+
+        
     }
 
     public void Respawn()
@@ -63,6 +75,12 @@ public class NetworkPlayerHealth : NetworkBehaviour
         {
             characterController.enabled = true;
         }
+    }
+
+    void ShowFloatingText()
+    {
+        var floatText = Instantiate(floatingTextPrefab, transform.position, Quaternion.identity, transform);
+        floatText.GetComponent<TextMeshPro>().text = currentHealth.Value.ToString();
     }
   
     
