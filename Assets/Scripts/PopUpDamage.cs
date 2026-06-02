@@ -1,20 +1,36 @@
 using UnityEngine;
+using TMPro;
 
 public class PopUpDamage : MonoBehaviour
 {
-    public Vector3 initialVelocity;
-    public Rigidbody rb;
-    public float lifetime = 1.5f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] float moveSpeed = 2f;
+    [SerializeField] float lifetime = 1f;
+
+    TextMeshPro textMesh;
+    Color textColor;
+
+    private void Awake()
     {
-        rb.linearVelocity = initialVelocity;
-        Destroy(gameObject, lifetime);
+        textMesh = GetComponent <TextMeshPro>();
+        textColor = textMesh.color;
+    }
+
+    private void SetDamage(int damage)
+    {
+        textMesh.text = damage.ToString();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        transform.position += Vector3.up * moveSpeed * Time.deltaTime;
+
+        textColor.a -= Time.deltaTime / lifetime;
+        textMesh.color = textColor;
+
+        if(textColor.a <= 0f)
+        {
+            Destroy(gameObject);
+        }    
     }
 }

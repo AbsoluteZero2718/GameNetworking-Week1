@@ -15,7 +15,7 @@ public class MultiplayerMenu : NetworkBehaviour
     [SerializeField] private TMP_Text joinCodeText;
     [SerializeField] private TMP_Text statusText;
     //player counter
-    [SerializeField] public TMP_Text PlayerCountText;
+    //[SerializeField] public TMP_Text PlayerCountText;
 
     [Header("Relay Settings")]
     [SerializeField] private int maxConnections = 4;
@@ -25,14 +25,7 @@ public class MultiplayerMenu : NetworkBehaviour
     {
         await InitializeUnityServices();
     }
-    void Update()
-    {
-        // Find all objects with the "Player" tag every frame
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        int playerCount = players.Length;
-        // Update TMP text
-        PlayerCountText.text = "Players: " + playerCount;
-    }
+
     private async System.Threading.Tasks.Task InitializeUnityServices()
     {
         try
@@ -65,10 +58,10 @@ public class MultiplayerMenu : NetworkBehaviour
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
             UnityTransport transport  = NetworkManager.Singleton.GetComponent<UnityTransport>();
+
             transport.UseWebSockets = true;
-            transport.SetRelayServerData(
-            AllocationUtils.ToRelayServerData(allocation, WebGLConnectionType)
-            );
+
+            transport.SetRelayServerData(AllocationUtils.ToRelayServerData(allocation, WebGLConnectionType));
 
             bool started = NetworkManager.Singleton.StartHost();
             if (started)
@@ -111,16 +104,16 @@ public class MultiplayerMenu : NetworkBehaviour
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
             UnityTransport transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+
             transport.UseWebSockets = true;
-            transport.SetRelayServerData(
-            AllocationUtils.ToRelayServerData(joinAllocation, WebGLConnectionType)
-            );
+
+            transport.SetRelayServerData(AllocationUtils.ToRelayServerData(joinAllocation, WebGLConnectionType));
 
             bool started = NetworkManager.Singleton.StartClient();
             if (started)
             {
                 SetStatus("Client started.");
-                //HideMenu();
+                HideMenu();
             }
             else
             {

@@ -57,7 +57,7 @@ public class PlayerCount : NetworkBehaviour
         {
             // Get total connected clients (including the Host if applicable)
             int count = NetworkManager.Singleton.ConnectedClients.Count;
-            Debug.Log($"Current Players: {count}");
+            //Debug.Log($"Current Players: {count}");
             
             if (playerCountText != null)
             {

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4471754741055924303}
   - component: {fileID: 8889268712149485577}
   - component: {fileID: 8983594928082615744}
-  - component: {fileID: 5696402661409628090}
+  - component: {fileID: 6051530417604292217}
   m_Layer: 0
   m_Name: FloatingText
   m_TagString: Untagged
@@ -208,7 +208,7 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &5696402661409628090
+--- !u!114 &6051530417604292217
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,9 +217,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 3830878619647646643}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc2ee8cd6f15ac648a72a6b41683f7c6, type: 3}
+  m_Script: {fileID: 11500000, guid: c4f161f08570a8a4196dd068d7ba0fa8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  ShowTopMostFoldoutHeaderGroup: 1
-  DestroyTime: 1
-  Offset: {x: 0, y: 100, z: 0}
+  m_EditorClassIdentifier: Assembly-CSharp::PopUpDamage
+  moveSpeed: 2
+  lifetime: 1
